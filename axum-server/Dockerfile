@@ -1,6 +1,6 @@
 FROM rust as build 
 WORKDIR /home 
-COPY ./server server
+COPY . server
 WORKDIR /home/server
 RUN cargo build --release
 
