@@ -1,9 +1,13 @@
-FROM rust
-WORKDIR /home 
-COPY . server
-WORKDIR /home/server
+FROM rust:1.70 as builder
+RUN mkdir /home/app
+WORKDIR /home/app
+COPY . .
 RUN cargo build --release
-RUN ls -la /home/server/target/release
-RUN cp /home/server/target/release/app /home/app.bin
-ENTRYPOINT [ "sh", "-c", "/home/app.bin" ]
-EXPOSE 80
+RUN mv /home/app/target/release/app /home/app.bin
+
+FROM debian:bullseye-slim
+RUN mkdir /app
+WORKDIR /app
+COPY --from=builder /home/app.bin /app/app.bin
+COPY run.sh /app/run.sh
+CMD ["sh", "/app/run.sh"]
