@@ -1,13 +1,9 @@
-FROM rust as build 
+FROM rust
 WORKDIR /home 
 COPY . server
 WORKDIR /home/server
 RUN cargo build --release
-
-FROM alpine as deploy
-WORKDIR /home
-COPY --from=build /home/server/target/release/server /home/app
-COPY ./run.sh /home/run.sh
-RUN ls -la /home
-ENTRYPOINT [ "/bin/sh", "/home/run.sh" ]
+RUN ls -la /home/server/target/release
+RUN cp /home/server/target/release/app /home/app.bin
+ENTRYPOINT [ "sh", "-c", "/home/app.bin" ]
 EXPOSE 80
